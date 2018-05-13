@@ -16,6 +16,7 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
+#include <QtWidgets/QListView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
@@ -42,11 +43,13 @@ public:
     QAction *action_Paste;
     QAction *action_Find;
     QAction *actiontest;
+    QAction *action_compile;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout;
     QTabWidget *titletabWidget;
+    QListView *listView;
     QMenuBar *menuBar;
     QMenu *menu_F;
     QMenu *menujhkjhk;
@@ -122,8 +125,14 @@ public:
         QIcon icon11;
         icon11.addFile(QStringLiteral(":/e/icon/edit-find.png"), QSize(), QIcon::Normal, QIcon::Off);
         action_Find->setIcon(icon11);
+        action_Find->setVisible(true);
         actiontest = new QAction(MainWindow);
         actiontest->setObjectName(QStringLiteral("actiontest"));
+        action_compile = new QAction(MainWindow);
+        action_compile->setObjectName(QStringLiteral("action_compile"));
+        QIcon icon12;
+        icon12.addFile(QStringLiteral("icon/gnome-run.png"), QSize(), QIcon::Normal, QIcon::Off);
+        action_compile->setIcon(icon12);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QStringLiteral("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -145,6 +154,13 @@ public:
 
         verticalLayout->addWidget(titletabWidget);
 
+        listView = new QListView(centralWidget);
+        listView->setObjectName(QStringLiteral("listView"));
+
+        verticalLayout->addWidget(listView);
+
+        verticalLayout->setStretch(0, 6);
+        verticalLayout->setStretch(1, 2);
 
         horizontalLayout->addLayout(verticalLayout);
 
@@ -187,8 +203,8 @@ public:
         menujhkjhk->addAction(action_Paste);
         menujhkjhk->addSeparator();
         menujhkjhk->addAction(action_Find);
-        mainToolBar->addAction(action_New);
         mainToolBar->addAction(action_Open);
+        mainToolBar->addAction(action_New);
         mainToolBar->addAction(action_Save);
         mainToolBar->addSeparator();
         mainToolBar->addAction(action_Undo);
@@ -196,6 +212,7 @@ public:
         mainToolBar->addAction(action_Copy);
         mainToolBar->addSeparator();
         mainToolBar->addAction(action_Find);
+        mainToolBar->addAction(action_compile);
 
         retranslateUi(MainWindow);
 
@@ -226,6 +243,7 @@ public:
         action_Paste->setText(QApplication::translate("MainWindow", "\347\262\230\350\264\264(&V)", Q_NULLPTR));
         action_Find->setText(QApplication::translate("MainWindow", "\346\237\245\346\211\276(&F)", Q_NULLPTR));
         actiontest->setText(QApplication::translate("MainWindow", "test", Q_NULLPTR));
+        action_compile->setText(QApplication::translate("MainWindow", "\347\274\226\350\257\221(&M)", Q_NULLPTR));
         menu_F->setTitle(QApplication::translate("MainWindow", "\346\226\207\344\273\266(&F)", Q_NULLPTR));
         menujhkjhk->setTitle(QApplication::translate("MainWindow", "\347\274\226\350\276\221(&E)", Q_NULLPTR));
         menu_H->setTitle(QApplication::translate("MainWindow", "\345\270\256\345\212\251\357\274\210&H\357\274\211", Q_NULLPTR));

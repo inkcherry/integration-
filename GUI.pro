@@ -29,15 +29,17 @@ SOURCES += \
     major_highlighter.cpp \
     titlelist.cpp \
     qhtextedit.cpp \
-    interpreter.c \
-    lexical_analyzer.c \
-    parser.c
+    interpreter.cpp \
+    parser.cpp \
+    lexical_analyzer.cpp
 
 HEADERS += \
         mainwindow.h \
     major_highlighter.h \
     titlelist.h \
-    qhtextedit.h
+    qhtextedit.h \
+    interpreter.h \
+    testh.h
 
 
 FORMS += \

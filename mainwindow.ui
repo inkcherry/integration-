@@ -40,7 +40,7 @@
        <number>0</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="6,2">
         <item>
          <widget class="QTabWidget" name="titletabWidget">
           <property name="currentIndex">
@@ -56,6 +56,9 @@
            <bool>false</bool>
           </property>
          </widget>
+        </item>
+        <item>
+         <widget class="QListView" name="listView"/>
         </item>
        </layout>
       </item>
@@ -113,8 +116,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="action_New"/>
    <addaction name="action_Open"/>
+   <addaction name="action_New"/>
    <addaction name="action_Save"/>
    <addaction name="separator"/>
    <addaction name="action_Undo"/>
@@ -122,6 +125,7 @@
    <addaction name="action_Copy"/>
    <addaction name="separator"/>
    <addaction name="action_Find"/>
+   <addaction name="action_compile"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="action_New">
@@ -228,10 +232,22 @@
    <property name="text">
     <string>查找(&amp;F)</string>
    </property>
+   <property name="visible">
+    <bool>true</bool>
+   </property>
   </action>
   <action name="actiontest">
    <property name="text">
     <string>test</string>
+   </property>
+  </action>
+  <action name="action_compile">
+   <property name="icon">
+    <iconset>
+     <normaloff>icon/gnome-run.png</normaloff>icon/gnome-run.png</iconset>
+   </property>
+   <property name="text">
+    <string>编译(&amp;M)</string>
    </property>
   </action>
  </widget>

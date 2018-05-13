@@ -63,6 +63,8 @@ private slots:
     void on_titletabWidget_tabBarClicked(int index);
 
     void on_titletabWidget_tabCloseRequested(int index);
+    void on_action_compile_triggered();
+
 
 private:
     TitleList *titlelist;

@@ -1,11 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include<QMessageBox>
+#include "interpreter.h"
+#include "testh.h"
+#include <String>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
 {
-      ui->setupUi(this);
+       ui->setupUi(this);
       /* InitEditor();  */              // 代码高亮初始化
        QTextCodec::setCodecForLocale(QTextCodec::codecForName("UTF-8"));  //utf-8编码
 
@@ -21,6 +24,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
       IsUnTitle=true;
       CurFile=tr("未命名.txt");
+
 
       setWindowTitle(CurFile);
       findDlg = new QDialog(this);
@@ -245,4 +249,34 @@ void MainWindow::on_titletabWidget_tabCloseRequested(int index)
 //      ui->titletabWidget->widget(index)->findChild<Qhtextedit *>()->~Qhtextedit();  //直接析构编辑器的内存也崩了）：
 
    }
+}
+
+void MainWindow::on_action_compile_triggered()
+{
+
+  //  QMessageBox *kk=new QMessageBox();
+    if(CurFile!=nullptr)
+    {
+        const char* C_CodeText=CurEdit->toPlainText().toStdString().c_str();
+        char* CodeText=new char[strlen(C_CodeText)+1];
+        strcpy(CodeText,C_CodeText);
+        std::string result ="";
+        int line=0;
+        bool is_error=true;
+        comp(CodeText,result,line);
+    }
+
+
+
+
+ //  kk->setText(CodeText);
+ //  kk->show();
+
+   //comp(CodeText);
+ // char *jj="fsdf";
+   // comp(jj);
+   //kk->show();
+
+    //findDlg->show();//查找框
+
 }

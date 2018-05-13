@@ -262,11 +262,16 @@ void MainWindow::on_action_compile_triggered()
         strcpy(CodeText,C_CodeText);
         std::string result ="";
         int line=0;
-        bool is_error=true;
-        comp(CodeText,result,line);
+        bool  is_error=true;
+        is_error=(comp(CodeText,result,line)==-1)?1:0;
+
+        QMessageBox *kt=new QMessageBox();
+
+        kt->setText(result.c_str());
+        kt->show();
     }
 
-
+    else return;
 
 
  //  kk->setText(CodeText);

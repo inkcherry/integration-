@@ -305,7 +305,7 @@ void token_match(int tk) {     //符号检测 检测当前
         lexical_analyzer();
 	} else {
 		printf("%d: expected token: %d\n", line, tk);
-
+        execute_result="expected token: "+std::to_string(line)+"\n";
 		exit(-1);
 	}
 }

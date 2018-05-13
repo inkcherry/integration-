@@ -21,6 +21,7 @@ void deal_global_declaration()    //识别全局变量 最前置的词法解析�
        deal_enmu_declaration();
        token_match('}');
    }
+
    token_match(';');
    return;
    }

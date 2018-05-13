@@ -69,7 +69,7 @@ private slots:
 private:
     TitleList *titlelist;
     Qhtextedit *CurEdit;
-
+    QTextEdit  *ExecOutput;
     QLineEdit *findLineEdit;
     QDialog   *findDlg;     //Find聊天窗口
     bool IsUnTitle;       //文件是否命名

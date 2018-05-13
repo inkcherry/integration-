@@ -86,7 +86,7 @@ int eval(){
 int comp(char *CodeText,std::string &result,int &line)
 {   
      
-     execute_result="";
+    // execute_result="";
      int i, fd;
      int *tmp;
 
@@ -150,7 +150,7 @@ int comp(char *CodeText,std::string &result,int &line)
         return -1;
     }
 
-       src ="#include <stdio.h>\nint fibonacci(int i) {if (i <= 1) {return 1;}\nreturn fibonacci(i-1) + fibonacci(i-2);}\nint main(){int i;i = 0;\nwhile (i <= 10) {\nprintf(\"fibonacci(%2d) = %d\n\", i, fibonacci(i));\ni = i + 1;\n}\nreturn 0;\n}";
+       src=CodeText;
 
 
    program();
@@ -167,8 +167,10 @@ int comp(char *CodeText,std::string &result,int &line)
     *--sp = PUSH; tmp = sp;
 
     *--sp = (int)tmp;
-    result = execute_result;
 
-    return eval();
+    eval();
+    result = execute_result;
+    execute_result="";
+    return 0;
 
 }

@@ -16,12 +16,12 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
-#include <QtWidgets/QListView>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QStatusBar>
 #include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -49,7 +49,7 @@ public:
     QHBoxLayout *horizontalLayout;
     QVBoxLayout *verticalLayout;
     QTabWidget *titletabWidget;
-    QListView *listView;
+    QTextEdit *ExecOutput;
     QMenuBar *menuBar;
     QMenu *menu_F;
     QMenu *menujhkjhk;
@@ -154,13 +154,13 @@ public:
 
         verticalLayout->addWidget(titletabWidget);
 
-        listView = new QListView(centralWidget);
-        listView->setObjectName(QStringLiteral("listView"));
+        ExecOutput = new QTextEdit(centralWidget);
+        ExecOutput->setObjectName(QStringLiteral("ExecOutput"));
 
-        verticalLayout->addWidget(listView);
+        verticalLayout->addWidget(ExecOutput);
 
         verticalLayout->setStretch(0, 6);
-        verticalLayout->setStretch(1, 2);
+        verticalLayout->setStretch(1, 3);
 
         horizontalLayout->addLayout(verticalLayout);
 

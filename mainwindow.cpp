@@ -24,8 +24,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
       IsUnTitle=true;
       CurFile=tr("未命名.txt");
-
-
+      ExecOutput=ui->ExecOutput;
+      ExecOutput->setReadOnly(true);
       setWindowTitle(CurFile);
       findDlg = new QDialog(this);
       findDlg->setWindowTitle(tr("查找"));
@@ -257,18 +257,36 @@ void MainWindow::on_action_compile_triggered()
   //  QMessageBox *kk=new QMessageBox();
     if(CurFile!=nullptr)
     {
-        const char* C_CodeText=CurEdit->toPlainText().toStdString().c_str();
-        char* CodeText=new char[strlen(C_CodeText)+1];
-        strcpy(CodeText,C_CodeText);
+        //这种转换方式有些会出现错误#include会出现乱码妹的！
+        //const char* C_CodeText=CurEdit->toPlainText().toStdString().c_str();
+        //char* CodeText=new char[strlen(C_CodeText)+1];
+        //strcpy(CodeText,C_CodeText);
+
+        QString C_CodeText= CurEdit->toPlainText();
+            QByteArray cdata =  C_CodeText.toLocal8Bit();
+            std::string str = std::string(cdata);
+            char *CodeText = const_cast<char*>(str.c_str());
+
+        //char *CodeText ="#include <stdio.h>\nint fibonacci(int i) {if (i <= 1) {return 1;}\nreturn fibonacci(i-1) + fibonacci(i-2);}\nint main(){int i;i = 0;\nwhile (i <= 10) {\nprintf(\"fibonacci(%2d) = %d\n\", i, fibonacci(i));\ni = i + 1;\n}\nreturn 0;\n}";
+
         std::string result ="";
         int line=0;
         bool  is_error=true;
+
         is_error=(comp(CodeText,result,line)==-1)?1:0;
 
-        QMessageBox *kt=new QMessageBox();
+        ExecOutput->setText(result.c_str());
 
-        kt->setText(result.c_str());
-        kt->show();
+
+        //comp(CodeText,result,line);
+//        QMessageBox *kt=new QMessageBox();
+
+//        kt->setText(CodeText);
+//        kt->show();
+//        QMessageBox *kt2=new QMessageBox();
+
+//        kt2->setText(CodeText2);
+//        kt2->show();
     }
 
     else return;

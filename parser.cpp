@@ -815,6 +815,7 @@ void deal_expression(int level) {
             }
             else {
                 printf("%d: compiler error, token = %d\n", line, token);
+                execute_result+=std::to_string(line)+": compiler error, token = "+std::to_string(token);
                 exit(-1);
             }
         }

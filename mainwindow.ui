@@ -40,7 +40,7 @@
        <number>0</number>
       </property>
       <item>
-       <layout class="QVBoxLayout" name="verticalLayout" stretch="6,2">
+       <layout class="QVBoxLayout" name="verticalLayout" stretch="6,3">
         <item>
          <widget class="QTabWidget" name="titletabWidget">
           <property name="currentIndex">
@@ -58,7 +58,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QListView" name="listView"/>
+         <widget class="QTextEdit" name="ExecOutput"/>
         </item>
        </layout>
       </item>

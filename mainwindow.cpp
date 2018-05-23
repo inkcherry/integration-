@@ -271,13 +271,15 @@ void MainWindow::on_action_compile_triggered()
 
         std::string result ="";
         int line=0;
-        bool  is_error=true;
+        bool  is_error=0;
 
-        is_error=(comp(CodeText,result,line)==-1)?1:0;
+        is_error=(comp(CodeText,result,is_error)==-1)?1:0;
 
         ExecOutput->setText(result.c_str());
 
 
+         if(is_error)
+           { ExecOutput->setTextColor(Qt::red);}
         //comp(CodeText,result,line);
 //        QMessageBox *kt=new QMessageBox();
 

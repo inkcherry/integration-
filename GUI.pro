@@ -30,8 +30,8 @@ SOURCES += \
     titlelist.cpp \
     qhtextedit.cpp \
     interpreter.cpp \
-    parser.cpp \
-    lexical_analyzer.cpp
+    lexer.cpp \
+    parser.cpp
 
 HEADERS += \
         mainwindow.h \

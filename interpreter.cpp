@@ -4,7 +4,7 @@
 #include<string.h>
 #include"interpreter.h"
 //#include"lexical_analyzer.c"   //语法解析(包含所有全局定义)
-#include"parser.cpp"             //词法解析
+#include"lexer.cpp"             //词法解析
 
 
 
@@ -78,13 +78,15 @@ int eval(){
 		else {
 			printf("unknown instruction:%d\n",op);
             execute_result="unknown instruction:%d\n";
+            is_exec_error=1;
 			return -1;
 		}
 	}
 	return 0;
 }
-int comp(char *CodeText,std::string &result,int &line)
+int comp(char *CodeText,std::string &result,bool &is_error)
 {   
+    is_exec_error=false;
      
     // execute_result="";
      int i, fd;
@@ -157,6 +159,8 @@ int comp(char *CodeText,std::string &result,int &line)
 
        if (!(pc = (int *)idmain[Value])) {
            printf("main() not defined\n");
+           execute_result="main() not defined\n";
+           is_exec_error=1;
            return -1;
        }
 
@@ -167,9 +171,11 @@ int comp(char *CodeText,std::string &result,int &line)
     *--sp = PUSH; tmp = sp;
 
     *--sp = (int)tmp;
-
+  if(token!=-1);
     eval();
+
     result = execute_result;
+    is_error=is_exec_error;
     execute_result="";
     return 0;
 

@@ -1,824 +1,312 @@
+// #include<stdio.h>
+int token;          		//当前的记号
+char *src,*old_src; 		//text的指针 token的下一个字符
+int poolsize;                   //虚拟机内存开辟空间size的参数
+int line;                       //行号
+int *text,                 //代码段
+ 	*old_text,             
+ 	*stack;                //栈
+char *data;                //数据段（只用与存放字符串）
+int *pc,*bp,*sp,ax,cycle;  //虚拟机中的寄存器，类似于计算机中的汇编意义
+int *symbols_tab,*cur_id;
+int token_val;
+int *idmain;  
+int cur_bp;   //函数堆栈帧指针
+int *watch_hash_change,watch_hash_flag;
+std::string execute_result="";  //程序输出信息
+bool is_exec_error;
+enum {CHAR, INT, PTR };      // types of variable/function
+                // the `main` function
 
-#include "lexical_analyzer.cpp"
-int var_type;   //变量类型
-int expr_type; //表达式类型
-void deal_statement();
-void deal_enmu_declaration();
-void deal_function_declaration();
-void deal_function_body();
-void deal_expression(int level);
-void deal_global_declaration()    //识别全局变量 最前置的词法解析（不支持#)  
-{
-    // printf("解析全局");
-   int type;
-   int i;
-   var_type = INT;
-   if(token==Enum)
-   {
-      token_match(Enum);  //枚举类型
-   if(token=='{'){
-       token_match('{');
-       deal_enmu_declaration();
-       token_match('}');
-   }
 
-   token_match(';');
-   return;
-   }
+//pc  存放下一条计算指令
+//sp  指向栈顶 栈是从高地址到低地址增长 入栈是sp减小
+//bp  指向栈的某些特定位置
+//ax  通用寄存器 用于存放指令结果
+enum {
+  Num = 128, Fun, Sys, Glo, Loc, Id,
+  Char, Else, Enum, If, Int, Return, Sizeof, While,
+  Assign, Cond, Lor, Lan, Or, Xor, And, Eq, Ne, Lt, Gt, Le, Ge, Shl, Shr, Add, Sub, Mul, Div, Mod, Inc, Dec, Brak
+};
+enum{LEA,IMM,JMP,CALL,JZ,JNZ,ENT,ADJ,LEV,LI,LC,SI,SC,PUSH,
+OR,XOR,AND,EQ,NE,LT,GT,LE,GE,SHL,SHR,ADD,SUB,MUL,DIV,MOD,
+OPEN,READ,CLOS,PRTF,MALC,MSET,MCMP,EXIT};
+//指令集 在虚拟机中相当与计算机汇编的指令 意义与汇编相同
 
-    if(token==Int){               //全局变量
-        token_match(Int);
-        // printf("declear int\n");
-    }
-    else if(token==Char){
-        token_match(Char);
-        var_type=CHAR;
-    }
 
-    while(token!=';'&&token!='}'){
-        type=var_type;
-        while(token==Mul){    //表示符号前面全部的* 地址  指针类型
-            token_match(Mul);  
-            type=type+PTR;
-        }
-        if(token!=Id){   //错误声明
-            printf("%d:bad global declaration\n",line);
-            execute_result+="%d:bad global declaration\n";
-            exit(-1);
-        }
-        if(cur_id[Class]){  //重复声明
-            printf("%d\n",token);
-            execute_result+=std::to_string(token);
+enum {Token, Hash, Name, Type, Class, Value, BType, BClass, BValue, IdSize}; //symbols_tab
 
-            printf("%d :duplicate global declaration\n",line);
-            exit(-1);
-        }
-        token_match(Id);   //变量/函数 名称
-       
-        cur_id[Type]=type;
-        
-        if(token=='(')    //函数类型 
-        {
-            cur_id[Class] = Fun; 
-            cur_id[Value]=(int)(text+1);
-            deal_function_declaration();
-        }
-        else {
-            // printf("before the id is %d\n",cur_id[Class]);
-            cur_id[Class]=Glo;   //变量类型
-            // printf("after -----the id is %d\n",cur_id[Class]);
-            cur_id[Value]=(int)data;
-            data=data+sizeof(int);
-        
-        }
-        if(token==',')
-        token_match(',');
-        
-    }
-    lexical_analyzer();
-}
 
-void deal_enmu_declaration(){
-   printf("解析枚举类型");
-   int enmu_index=0;
-   while(token!='}'){
-       if(token!=Id){
-           printf("%d:bad enum identifier %d\n",line,token);
-           exit(-1);
-       }
-       lexical_analyzer();   //向内存中push 进这个id
-       if(token==Assign){      //enmu初始化自己定义的下标
-           lexical_analyzer();
-           if(token!=Num){
-           printf("%d:bad enum identifier %d\n",line,token);
-           exit(-1);
-           }
-           enmu_index=token_val;   //初始化下标
-          lexical_analyzer();
-        }
-        cur_id[Class]=Num;
-        cur_id[Type]=INT;
-        cur_id[Value]=enmu_index++;
-        if(token==',')   
+
+
+void  lexical_analyzer (){                    //词法分析(字符转token)
+	char *st_pos,*en_pos;
+	int hash;
+		while(token=*src)
+		{    
+			// printf("[%d] ",token);
+			if(token==209)
+			printf("%s",src);
+			// printf("token is %d %c \n ",token,*src);
+			src++;
+	
+			if(token=='\n')  //换行;
+			{
+			   ++line;
+			}
+	
+	
+			else if(token =='#') //跳过
+			{
+					while (*src != 0 && *src != '\n') 
+					src++;
+			}    
+	
+	
+			else if((token>='a'&&token<='z')||(token>='A'&&token<='Z')||token=='_') //标识符开头;
+			{  
+			   st_pos=src-1;
+			   
+			   hash=token;
+			  
+		
+			   while((*src>='a'&&*src<='z')||(*src>='A'&&*src<='Z')||*src=='_'||(*src>= '0' && *src<= '9'))
+					{hash=hash*147+*src;//hash映射
+						// printf("||||||||||||||||||||||||||||||||||||||\n");
+					 src++; 
+					}
+			   en_pos=src-1;
+	
+			   cur_id=symbols_tab;
+			           
+				while (cur_id[Token]) {  //遍历符号表
+				//test symbol table
+				// if(token=='a')
+				// {
+				// 	printf("symbol  %s | hash  %d | token  %d\n",cur_id[Name],cur_id[Hash],cur_id[Token]);						
+
+				// }
+
+					if (cur_id[Hash] == hash && !memcmp((char*)cur_id[Name], st_pos, en_pos-st_pos+1)) {
+						token = cur_id[Token];  //如果是已经存在的字符
+						return;
+					}
+					else cur_id=cur_id+IdSize;   //++
+				}
+				//如果没有return（跳出） ，下面这段相当于push
+				// printf("push new  %s\n\n",st_pos);	
+				    
+			
+				cur_id[Name]=(int)st_pos;
+				cur_id[Hash]=hash;
+				//test hash change
+				// if(token=='a')
+				// {// {   watch_hash_change=&cur_id[hash];
+				// 	printf("%s %d $|||||||||||||||",cur_id[Name],cur_id[Hash]);
+				// 	watch_hash_change=&cur_id[Hash];
+				// 	// watch_hash_flag=cur_id[Hash];
+				// 	// cur_id[Hash]=2;
+				// 	// watch_hash_flag++;
+				// }	
+				token=cur_id[Token]=Id;
+
+				return;
+			}
+	
+	
+			else if (token >= '0' && token <= '9') {   //数字
+				// parse number, three kinds: dec(123) hex(0x123) oct(017)
+				token_val = token - '0';
+				if (token_val > 0) {                    //10 default
+					// dec, starts with [1-9]
+					while (*src >= '0' && *src <= '9') {
+						token_val = token_val*10 + *src++ - '0';
+					}
+				} 
+	
+				else  if (*src == 'x' || *src == 'X')   //16
+				{
+					//hex
+					token = *++src;
+					while ((token >= '0' && token <= '9') || (token >= 'a' && token <= 'f') || (token >= 'A' && token <= 'F')) {
+						token_val = token_val * 16 + (token & 15) + (token >= 'A' ? 9 : 0);
+						token = *++src;
+					}
+				}
+	
+				else if (*src == 'o' || *src == 'O')
+				{                                //8
+					// oct
+					while (*src >= '0' && *src <= '7') {
+						token_val = token_val*8 + *src++ - '0';
+					}
+				}
+			
+				token = Num;
+				return;
+			}
+	
+			else if (token == '"' || token == '\'') {
+				// parse string literal, currently, the only supported escape
+				// character is '\n', store the string literal into data.
+				st_pos = data;                      //用data存放字符串
+				while (*src != 0 && *src != token) {
+					token_val = *src++;
+					if (token_val == '\\') {
+						// escape character
+						token_val = *src++;
+						if (token_val == 'n') {
+							token_val = '\n';
+						}
+					}
+					if (token == '"') {
+						*data++ = token_val;
+					}
+				}
+				src++;
+				// if it is a single character, return Num token
+				if (token == '"') {
+					token_val = (int)st_pos;
+				} else {
+					token = Num;
+				}
+				return;
+			}
+	
+			else if (token == '/') {               //注释 仅仅//类型
+			if (*src == '/') {
+				// skip comments
+				while (*src != 0 && *src != '\n') {
+					++src;
+				}
+			} else {
+				// divide operator
+				token = Div;
+				return;
+			}
+			}
+	
+	
+			else if (token == '=') {
+				// parse '==' and '='
+				if (*src == '=') {
+					src ++;
+					token = Eq;
+				} else {
+					token = Assign;
+				}
+				return;
+			}
+			else if (token == '+') {
+				// parse '+' and '++'
+				if (*src == '+') {
+					src ++;
+					token = Inc;
+				} else {
+					token = Add;
+				}
+				return;
+			}
+			else if (token == '-') {
+				// parse '-' and '--'
+				if (*src == '-') {
+					src ++;
+					token = Dec;
+				} else {
+					token = Sub;
+				}
+				return;
+			}
+			else if (token == '!') {
+				// parse '!='
+				if (*src == '=') {
+					src++;
+					token = Ne;
+				}
+				return;
+			}
+			else if (token == '<') {
+				// parse '<=', '<<' or '<'
+				if (*src == '=') {
+					src ++;
+					token = Le;
+				} else if (*src == '<') {
+					src ++;
+					token = Shl;
+				} else {
+					token = Lt;
+				}
+				return;
+			}
+			else if (token == '>') {
+				// parse '>=', '>>' or '>'
+				if (*src == '=') {
+					src ++;
+					token = Ge;
+				} else if (*src == '>') {
+					src ++;
+					token = Shr;
+				} else {
+					token = Gt;
+				}
+				return;
+			}
+			else if (token == '|') {
+				// parse '|' or '||'
+				if (*src == '|') {
+					src ++;
+					token = Lor;
+				} else {
+					token = Or;
+				}
+				return;
+			}
+			else if (token == '&') {
+				// parse '&' and '&&'
+				if (*src == '&') {
+					src ++;
+					token = Lan;
+				} else {
+					token = And;
+				}
+				return;
+			}
+			else if (token == '^') {
+				token = Xor;
+				return;
+			}
+			else if (token == '%') {
+				token = Mod;
+				return;
+			}
+			else if (token == '*') {
+				token = Mul;
+				return;
+			}
+			else if (token == '[') {
+				token = Brak;
+				return;
+			}
+			else if (token == '?') {
+				token = Cond;
+				return;
+			}
+			else if (token == '~' || token == ';' || token == '{' || token == '}' || token == '(' || token == ')' || token == ']' || token == ',' || token == ':') {
+				// directly return the character as token;
+				return;
+			}
+	
+	
+		}
+	return;
+	}
+void token_match(int tk) {     //符号检测 检测当前
+	if (token == tk) {
         lexical_analyzer();
-   }
+	} else {
+		printf("%d: expected token: %d\n", line, tk);
+        execute_result="expected token: "+std::to_string(((char)(tk)))+"\n";
+        is_exec_error=1;
+        lexical_analyzer();
+	}
 }
-void deal_function_declaration(){
-    // printf("a new function\n");
-    token_match('(');
-
-
-    //解析参数
-    int type, parameter_index=0;
-    while(token!=')'){         //每次while匹配一个参数
-        // printf("push a new para");
-        type=INT;
-        if(token==Int)
-        token_match(Int);
-        else if(token==Char){
-            type =CHAR;
-            token_match(Char);
-        }
-        
-        while(token==Mul){
-            token_match(Mul);
-            type=type+PTR;
-        }
-        if(token!=Id){
-            printf("%d: bad parameter declaration\n", line);
-            exit(-1);
-        }
-        if (cur_id[Class] == Loc) {  
-            printf("%d: duplicate parameter declaration\n", line);
-            exit(-1);
-        }
-       token_match(Id);
-        //将全局变量临时保存到临时的BCLass中。再把这个变量初始化 
-        cur_id[BClass] = cur_id[Class]; cur_id[Class]  = Loc;
-        cur_id[BType]  = cur_id[Type];  cur_id[Type]   = type;
-        
-        cur_id[BValue] = cur_id[Value]; cur_id[Value]  = parameter_index++;   // i
-
-        
-        if(token==','){
-            token_match(',');
-        }
-    }
-    cur_bp=parameter_index+1; //ebp在最后一参数 下两个地址
-    token_match(')');
-    //参数解析结束
-
-    token_match('{');
-    //函数体解析
-
-    // printf("function body\n");
-      //局部变量定义 代码跟全局变量定义基本一致
-    int p_localvar=cur_bp;
-    while(token==Int||token==Char){   //变量定义
-            var_type=(token == Int) ? INT : CHAR;
-            token_match(token);
-   
-        while(token!=';'){  
-            type=var_type;
-            while(token==Mul){
-                token_match(Mul);
-                type=type+PTR;
-            }
-            if(token!=Id){   //错误声明
-                printf("%d:bad local declaration\n",line);
-                exit(-1);
-            }
-            if(cur_id[Class]==Loc){  //重复声明 
-                
-                printf("%d :duplicate local declaration\n",line);
-                exit(-1);
-            }
-            token_match(Id);   
-            
-            cur_id[BClass] = cur_id[Class]; cur_id[Class]  = Loc;
-            cur_id[BType]  = cur_id[Type];  cur_id[Type]   = type;
-            cur_id[BValue] = cur_id[Value]; cur_id[Value]  = ++p_localvar;   // index of current parameter
-            if (token == ',') {
-                token_match(',');
-            }
-        }
-        token_match(';');
-    }
-
-    *++text=ENT;
-    *++text=p_localvar-cur_bp;
-    
-    while(token!='}'){
-        deal_statement();
-    }
-    *++text=LEV;
-    //把全局变量还原  这一段不加会导致两个函数的局部变量相串
-    cur_id = symbols_tab;
-    while (cur_id[Token]) {
-        if (cur_id[Class] == Loc) {
-            cur_id[Class] = cur_id[BClass];
-            cur_id[Type]  = cur_id[BType];
-            cur_id[Value] = cur_id[BValue];
-        }
-        cur_id = cur_id + IdSize;
-    }
-}
-
-
-
-void deal_statement(){
-    int *b,*a;
-    if (token == If) {
-       token_match(If);
-       token_match('(');
-       deal_expression(Assign);  // parse condition
-       token_match(')');
-        *++text = JZ;
-        b = ++text;
-        deal_statement();         // parsedeal_deal_statement
-        if (token == Else) { // parse else
-           token_match(Else);
-            // emit code for JMP B
-            *b = (int)(text + 3);
-            *++text = JMP;
-            b = ++text;
-            deal_statement();
-        }
-        *b = (int)(text + 1);
-    }
-
-    else if (token == While) {
-       token_match(While);
-        a = text + 1;
-       token_match('(');
-       deal_expression(Assign);
-       token_match(')');
-        *++text = JZ;
-        b = ++text;
-        deal_statement();
-        *++text = JMP;
-        *++text = (int)a;
-        *b = (int)(text + 1);
-    }
-
-    else if (token == Return) {
-        // return [expression];
-       token_match(Return);
-        if (token != ';') {
-           deal_expression(Assign);
-        }
-       token_match(';');
-        // emit code for return
-        *++text = LEV;
-    }
-
-    else if (token == '{') {
-        // { <statement> ... }
-       token_match('{');
-        while (token != '}') {
-            deal_statement();
-        }
-       token_match('}');
-    }
-    else if (token == ';') {
-        // empty statement
-       token_match(';');
-    }
-    else {
-        // a = b; or function_call();
-       deal_expression(Assign);
-       token_match(';');
-    }
-}
-
-
-///////////////////////////////////////////////
-///////////////////////////////////////////////
-///////////////////////////////////////////////
-
-
-
-
-
-void deal_expression(int level) {
-
-    // 1. unit_unary ::= unit | unit unary_op | unary_op unit
-    // 2. expr ::= unit_unary (bin_op unit_unary ...)
-
-    // unit_unary()
-    int *id;
-    int tmp;
-    int *addr;
-    {
-        if (!token) {
-            printf("%d: unexpected token EOF of expression\n", line);
-            exit(-1);
-        }
-        if (token == Num) {
-            token_match(Num);
-
-            // emit code
-            *++text = IMM;
-            *++text = token_val;
-            expr_type = INT;
-        }
-        else if (token == '"') {
-            // continous string "abc" "abc"
-
-
-            // emit code
-            *++text = IMM;
-            *++text = token_val;
-
-            token_match('"');
-            // store the rest strings
-            while (token == '"') {
-                token_match('"');
-            }
-
-            // append the end of string character '\0', all the data are default
-            // to 0, so just move data one position forward.
-            data = (char *)(((int)data + sizeof(int)) & (-sizeof(int)));
-            expr_type = PTR;
-        }
-        else if (token == Sizeof) {
-            // sizeof is actually an unary operator
-            // now only `sizeof(int)`, `sizeof(char)` and `sizeof(*...)` are
-            // supported.
-            token_match(Sizeof);
-            token_match('(');
-            expr_type = INT;
-
-            if (token == Int) {
-                token_match(Int);
-            } else if (token == Char) {
-                token_match(Char);
-                expr_type = CHAR;
-            }
-
-            while (token == Mul) {
-                token_match(Mul);
-                expr_type = expr_type + PTR;
-            }
-
-            token_match(')');
-
-            // emit code
-            *++text = IMM;
-            *++text = (expr_type == CHAR) ? sizeof(char) : sizeof(int);
-
-            expr_type = INT;
-        }
-        else if (token == Id) {
-            // there are several type when occurs to Id
-            // but this is unit, so it can only be
-            // 1. function call
-            // 2. Enum variable
-            // 3. global/local variable
-            token_match(Id);
-
-            id = cur_id;
-
-            if (token == '(') {
-                // function call
-                token_match('(');
-
-                // pass in arguments
-                tmp = 0; // number of arguments
-                while (token != ')') {
-                    deal_expression(Assign);
-                    *++text = PUSH;
-                    tmp ++;
-
-                    if (token == ',') {
-                        token_match(',');
-                    }
-
-                }
-                token_match(')');
-
-                // emit code
-                if (id[Class] == Sys) {
-                    // system functions
-                    *++text = id[Value];
-                }
-                else if (id[Class] == Fun) {
-                    // function call
-                    *++text = CALL;
-                    *++text = id[Value];
-                }
-                else {
-                    printf("%d: bad function call\n", line);
-                    exit(-1);
-                }
-
-                // clean the stack for arguments
-                if (tmp > 0) {
-                    *++text = ADJ;
-                    *++text = tmp;
-                }
-                expr_type = id[Type];
-            }
-            else if (id[Class] == Num) {
-                // enum variable
-                *++text = IMM;
-                *++text = id[Value];
-                expr_type = INT;
-            }
-            else {
-                // variable
-                if (id[Class] == Loc) {
-                    *++text = LEA;
-                    *++text = cur_bp - id[Value];
-                }
-                else if (id[Class] == Glo) {
-                    *++text = IMM;
-                    *++text = id[Value];
-                }
-                else {
-                    printf("%d: undefined variable\n", line);
-                    exit(-1);
-                }
-
-                // emit code, default behaviour is to load the value of the
-                // address which is stored in `ax`
-                expr_type = id[Type];
-                *++text = (expr_type == Char) ? LC : LI;
-            }
-        }
-        else if (token == '(') {
-            // cast or parenthesis
-            token_match('(');
-            if (token == Int || token == Char) {
-                tmp = (token == Char) ? CHAR : INT; // cast type
-                token_match(token);
-                while (token == Mul) {
-                    token_match(Mul);
-                    tmp = tmp + PTR;
-                }
-
-                token_match(')');
-
-                deal_expression(Inc); // cast has precedence as Inc(++)
-
-                expr_type  = tmp;
-            } else {
-                // normal parenthesis
-                deal_expression(Assign);
-                token_match(')');
-            }
-        }
-        else if (token == Mul) {
-            // dereference *<addr>
-            token_match(Mul);
-            deal_expression(Inc); // dereference has the same precedence as Inc(++)
-
-            if (expr_type >= PTR) {
-                expr_type = expr_type - PTR;
-            } else {
-                printf("%d: bad dereference\n", line);
-                exit(-1);
-            }
-
-            *++text = (expr_type == CHAR) ? LC : LI;
-        }
-        else if (token == And) {
-            // get the address of
-            token_match(And);
-            deal_expression(Inc); // get the address of
-            if (*text == LC || *text == LI) {
-                text --;
-            } else {
-                printf("%d: bad address of\n", line);
-                exit(-1);
-            }
-
-            expr_type = expr_type + PTR;
-        }
-        else if (token == '!') {
-            // not
-            token_match('!');
-            deal_expression(Inc);
-
-            // emit code, use <expr> == 0
-            *++text = PUSH;
-            *++text = IMM;
-            *++text = 0;
-            *++text = EQ;
-
-            expr_type = INT;
-        }
-        else if (token == '~') {
-            // bitwise not
-            token_match('~');
-            deal_expression(Inc);
-
-            // emit code, use <expr> XOR -1
-            *++text = PUSH;
-            *++text = IMM;
-            *++text = -1;
-            *++text = XOR;
-
-            expr_type = INT;
-        }
-        else if (token == Add) {
-            // +var, do nothing
-            token_match(Add);
-            deal_expression(Inc);
-
-            expr_type = INT;
-        }
-        else if (token == Sub) {
-            // -var
-            token_match(Sub);
-
-            if (token == Num) {
-                *++text = IMM;
-                *++text = -token_val;
-                token_match(Num);
-            } else {
-
-                *++text = IMM;
-                *++text = -1;
-                *++text = PUSH;
-                deal_expression(Inc);
-                *++text = MUL;
-            }
-
-            expr_type = INT;
-        }
-        else if (token == Inc || token == Dec) {
-            tmp = token;
-            token_match(token);
-            deal_expression(Inc);
-            if (*text == LC) {
-                *text = PUSH;  // to duplicate the address
-                *++text = LC;
-            } else if (*text == LI) {
-                *text = PUSH;
-                *++text = LI;
-            } else {
-                printf("%d: bad lvalue of pre-increment\n", line);
-                exit(-1);
-            }
-            *++text = PUSH;
-            *++text = IMM;
-            *++text = (expr_type > PTR) ? sizeof(int) : sizeof(char);
-            *++text = (tmp == Inc) ? ADD : SUB;
-            *++text = (expr_type == CHAR) ? SC : SI;
-        }
-        else {
-            printf("%d: baddeal_expression\n", line);
-            exit(-1);
-        }
-    }
-
-    // binary operator and postfix operators.
-    {
-        while (token >= level) {
-            // handle according to current operator's precedence
-            tmp = expr_type;
-            if (token == Assign) {
-                // var = expr;
-                token_match(Assign);
-                if (*text == LC || *text == LI) {
-                    *text = PUSH; // save the lvalue's pointer
-                } else {
-                    printf("%d: bad lvalue in assignment\n", line);
-                    exit(-1);
-                }
-                deal_expression(Assign);
-
-                expr_type = tmp;
-                *++text = (expr_type == CHAR) ? SC : SI;
-            }
-            else if (token == Cond) {
-                // expr ? a : b;
-                token_match(Cond);
-                *++text = JZ;
-                addr = ++text;
-                deal_expression(Assign);
-                if (token == ':') {
-                    token_match(':');
-                } else {
-                    printf("%d: missing colon in conditional\n", line);
-                    exit(-1);
-                }
-                *addr = (int)(text + 3);
-                *++text = JMP;
-                addr = ++text;
-                deal_expression(Cond);
-                *addr = (int)(text + 1);
-            }
-            else if (token == Lor) {
-                // logic or
-                token_match(Lor);
-                *++text = JNZ;
-                addr = ++text;
-                deal_expression(Lan);
-                *addr = (int)(text + 1);
-                expr_type = INT;
-            }
-            else if (token == Lan) {
-                // logic and
-                token_match(Lan);
-                *++text = JZ;
-                addr = ++text;
-                deal_expression(Or);
-                *addr = (int)(text + 1);
-                expr_type = INT;
-            }
-            else if (token == Or) {
-                // bitwise or
-                token_match(Or);
-                *++text = PUSH;
-                deal_expression(Xor);
-                *++text = OR;
-                expr_type = INT;
-            }
-            else if (token == Xor) {
-                // bitwise xor
-                token_match(Xor);
-                *++text = PUSH;
-                deal_expression(And);
-                *++text = XOR;
-                expr_type = INT;
-            }
-            else if (token == And) {
-                // bitwise and
-                token_match(And);
-                *++text = PUSH;
-                deal_expression(Eq);
-                *++text = AND;
-                expr_type = INT;
-            }
-            else if (token == Eq) {
-                // equal ==
-                token_match(Eq);
-                *++text = PUSH;
-                deal_expression(Ne);
-                *++text = EQ;
-                expr_type = INT;
-            }
-            else if (token == Ne) {
-                // not equal !=
-                token_match(Ne);
-                *++text = PUSH;
-                deal_expression(Lt);
-                *++text = NE;
-                expr_type = INT;
-            }
-            else if (token == Lt) {
-                // less than
-                token_match(Lt);
-                *++text = PUSH;
-                deal_expression(Shl);
-                *++text = LT;
-                expr_type = INT;
-            }
-            else if (token == Gt) {
-                // greater than
-                token_match(Gt);
-                *++text = PUSH;
-                deal_expression(Shl);
-                *++text = GT;
-                expr_type = INT;
-            }
-            else if (token == Le) {
-                // less than or equal to
-                token_match(Le);
-                *++text = PUSH;
-                deal_expression(Shl);
-                *++text = LE;
-                expr_type = INT;
-            }
-            else if (token == Ge) {
-                // greater than or equal to
-                token_match(Ge);
-                *++text = PUSH;
-                deal_expression(Shl);
-                *++text = GE;
-                expr_type = INT;
-            }
-            else if (token == Shl) {
-                // shift left
-                token_match(Shl);
-                *++text = PUSH;
-                deal_expression(Add);
-                *++text = SHL;
-                expr_type = INT;
-            }
-            else if (token == Shr) {
-                // shift right
-                token_match(Shr);
-                *++text = PUSH;
-                deal_expression(Add);
-                *++text = SHR;
-                expr_type = INT;
-            }
-            else if (token == Add) {
-                // add
-                token_match(Add);
-                *++text = PUSH;
-                deal_expression(Mul);
-
-                expr_type = tmp;
-                if (expr_type > PTR) {
-                    // pointer type, and not `char *`
-                    *++text = PUSH;
-                    *++text = IMM;
-                    *++text = sizeof(int);
-                    *++text = MUL;
-                }
-                *++text = ADD;
-            }
-            else if (token == Sub) {
-                // sub
-                token_match(Sub);
-                *++text = PUSH;
-                deal_expression(Mul);
-                if (tmp > PTR && tmp == expr_type) {
-                    // pointer subtraction
-                    *++text = SUB;
-                    *++text = PUSH;
-                    *++text = IMM;
-                    *++text = sizeof(int);
-                    *++text = DIV;
-                    expr_type = INT;
-                } else if (tmp > PTR) {
-                    // pointer movement
-                    *++text = PUSH;
-                    *++text = IMM;
-                    *++text = sizeof(int);
-                    *++text = MUL;
-                    *++text = SUB;
-                    expr_type = tmp;
-                } else {
-                    // numeral subtraction
-                    *++text = SUB;
-                    expr_type = tmp;
-                }
-            }
-            else if (token == Mul) {
-                // multiply
-                token_match(Mul);
-                *++text = PUSH;
-                deal_expression(Inc);
-                *++text = MUL;
-                expr_type = tmp;
-            }
-            else if (token == Div) {
-                // divide
-                token_match(Div);
-                *++text = PUSH;
-                deal_expression(Inc);
-                *++text = DIV;
-                expr_type = tmp;
-            }
-            else if (token == Mod) {
-                // Modulo
-                token_match(Mod);
-                *++text = PUSH;
-                deal_expression(Inc);
-                *++text = MOD;
-                expr_type = tmp;
-            }
-            else if (token == Inc || token == Dec) {
-                // postfix inc(++) and dec(--)
-                // we will increase the value to the variable and decrease it
-                // on `ax` to get its original value.
-                if (*text == LI) {
-                    *text = PUSH;
-                    *++text = LI;
-                }
-                else if (*text == LC) {
-                    *text = PUSH;
-                    *++text = LC;
-                }
-                else {
-                    printf("%d: bad value in increment\n", line);
-                    exit(-1);
-                }
-
-                *++text = PUSH;
-                *++text = IMM;
-                *++text = (expr_type > PTR) ? sizeof(int) : sizeof(char);
-                *++text = (token == Inc) ? ADD : SUB;
-                *++text = (expr_type == CHAR) ? SC : SI;
-                *++text = PUSH;
-                *++text = IMM;
-                *++text = (expr_type > PTR) ? sizeof(int) : sizeof(char);
-                *++text = (token == Inc) ? SUB : ADD;
-                token_match(token);
-            }
-            else if (token == Brak) {
-                // array access var[xx]
-                token_match(Brak);
-                *++text = PUSH;
-                deal_expression(Assign);
-                token_match(']');
-
-                if (tmp > PTR) {
-                    // pointer, `not char *`
-                    *++text = PUSH;
-                    *++text = IMM;
-                    *++text = sizeof(int);
-                    *++text = MUL;
-                }
-                else if (tmp < PTR) {
-                    printf("%d: pointer type expected\n", line);
-                    exit(-1);
-                }
-                expr_type = tmp - PTR;
-                *++text = ADD;
-                *++text = (expr_type == CHAR) ? LC : LI;
-            }
-            else {
-                printf("%d: compiler error, token = %d\n", line, token);
-                execute_result+=std::to_string(line)+": compiler error, token = "+std::to_string(token);
-                exit(-1);
-            }
-        }
-    }
-}
-

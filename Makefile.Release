@@ -613,8 +613,6 @@ release/moc_mainwindow.cpp: ui_mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtabbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtabwidget.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qrubberband.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QListView \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qlistview.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMainWindow \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMenu \
@@ -624,6 +622,13 @@ release/moc_mainwindow.cpp: ui_mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QStatusBar \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qstatusbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTabWidget \
+		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTextEdit \
+		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtextedit.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextdocument.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextoption.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextcursor.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextformat.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qpen.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QToolBar \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtoolbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QVBoxLayout \
@@ -632,18 +637,11 @@ release/moc_mainwindow.cpp: ui_mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/QSyntaxHighlighter \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qsyntaxhighlighter.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextobject.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextformat.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qpen.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextoption.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextlayout.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qglyphrun.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qrawfont.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qfontdatabase.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextcursor.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/QTextCharFormat \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTextEdit \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtextedit.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextdocument.h \
 		qhtextedit.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMessageBox \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qmessagebox.h \
@@ -953,8 +951,6 @@ release/main.o: main.cpp mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtabbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtabwidget.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qrubberband.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QListView \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qlistview.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMainWindow \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMenu \
@@ -964,6 +960,13 @@ release/main.o: main.cpp mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QStatusBar \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qstatusbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTabWidget \
+		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTextEdit \
+		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtextedit.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextdocument.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextoption.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextcursor.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextformat.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qpen.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QToolBar \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtoolbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QVBoxLayout \
@@ -972,18 +975,11 @@ release/main.o: main.cpp mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/QSyntaxHighlighter \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qsyntaxhighlighter.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextobject.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextformat.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qpen.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextoption.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextlayout.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qglyphrun.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qrawfont.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qfontdatabase.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextcursor.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/QTextCharFormat \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTextEdit \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtextedit.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextdocument.h \
 		qhtextedit.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMessageBox \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qmessagebox.h \
@@ -1144,8 +1140,6 @@ release/mainwindow.o: mainwindow.cpp mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtabbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtabwidget.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qrubberband.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QListView \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qlistview.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMainWindow \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qmainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMenu \
@@ -1155,6 +1149,13 @@ release/mainwindow.o: mainwindow.cpp mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QStatusBar \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qstatusbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTabWidget \
+		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTextEdit \
+		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtextedit.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextdocument.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextoption.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextcursor.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextformat.h \
+		C:/Qt/5.9.1/mingw53_32/include/QtGui/qpen.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QToolBar \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtoolbar.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QVBoxLayout \
@@ -1163,18 +1164,11 @@ release/mainwindow.o: mainwindow.cpp mainwindow.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/QSyntaxHighlighter \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qsyntaxhighlighter.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextobject.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextformat.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qpen.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextoption.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextlayout.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qglyphrun.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qrawfont.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qfontdatabase.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextcursor.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/QTextCharFormat \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QTextEdit \
-		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qtextedit.h \
-		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtextdocument.h \
 		qhtextedit.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/QMessageBox \
 		C:/Qt/5.9.1/mingw53_32/include/QtWidgets/qmessagebox.h \
@@ -1674,8 +1668,8 @@ release/interpreter.o: interpreter.cpp interpreter.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtCore/qfiledevice.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qvector2d.h \
 		C:/Qt/5.9.1/mingw53_32/include/QtGui/qtouchdevice.h \
-		parser.cpp \
-		lexical_analyzer.cpp
+		lexer.cpp \
+		parser.cpp
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o release\interpreter.o interpreter.cpp
 
 release/qrc_res.o: release/qrc_res.cpp 
